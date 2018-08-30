@@ -19,17 +19,21 @@ def register(request):
                 'secret': settings.GOOGLE_RECAPTCHA_SECRET_KEY,
                 'response': recaptcha_response
             }
-            data = urllib.parse.urlencode(values)
+            data = urllib.parse.urlencode(values).encode("utf-8")
             req = urllib.request.Request(url, data)
             response = urllib.request.urlopen(req)
-            result = json.load(response)
+            result = json.loads(response.read().decode('utf-8'))
             if result['success']:
                 form.save()
                 username = form.cleaned_data.get('username')
                 raw_password = form.cleaned_data.get('password1')
                 user = authenticate(username=username, password=raw_password)
                 login(request, user)
-            return redirect('home')
+            return redirect('/')
     else:
         form = UserCreationForm()
     return render(request, 'register.html', {'form': form})
+def root(request):
+    if not request.user.is_authenticated():
+        return redirect('register/')
+    return render(request, 'root.html', {})
