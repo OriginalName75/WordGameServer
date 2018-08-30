@@ -1,1 +1,20 @@
-lolilol
+<!DOCTYPE HTML>
+<html>
+<head>
+<script src='https://www.google.com/recaptcha/api.js'></script>
+</head>
+<body>
+
+
+
+
+<h2>Sign up</h2>
+  <form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    
+    <div class="g-recaptcha" data-sitekey="6Le3Um0UAAAAACNc189FV0nnbGYJzBHuU-CEO962"></div>
+    <button type="submit">Sign up</button>
+  </form>
+ </body>
+ </html>
