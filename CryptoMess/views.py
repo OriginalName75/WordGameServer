@@ -16,7 +16,6 @@ def send_key(_):
     key_saved.public_1 = str(secret_message_hider.pub_key[1])
     key_saved.private_0 = str(secret_message_hider.prv_key[0])
     key_saved.private_1 = str(secret_message_hider.prv_key[1])
-    key_saved.save())
-    l = secret_message_hider.encrypt("Momo")
+    key_saved.save()
     data_json = {'public_0' : key_saved.public_0, "public_1" : key_saved.public_1}
     return JsonResponse(data_json, safe = False)
