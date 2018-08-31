@@ -15,10 +15,11 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='UserInfo',
             fields=[
-                ('id', models.AutoField(serialize=False, auto_created=True, primary_key=True, verbose_name='ID')),
+                ('id', models.AutoField(serialize=False, primary_key=True, auto_created=True, verbose_name='ID')),
                 ('mmr', models.FloatField(default=2000)),
-                ('friends', models.ManyToManyField(to='UserManagement.UserInfo', related_name='_userinfo_friends_+', blank=True, null=True, default=None)),
-                ('user', models.OneToOneField(related_name='info', to=settings.AUTH_USER_MODEL)),
+                ('friends', models.ManyToManyField(related_name='_userinfo_friends_+', default=None, to='UserManagement.UserInfo', blank=True)),
+                ('friends_asked', models.ManyToManyField(related_name='friend_demands', default=None, to='UserManagement.UserInfo', blank=True)),
+                ('user', models.OneToOneField(to=settings.AUTH_USER_MODEL, related_name='info')),
             ],
         ),
     ]

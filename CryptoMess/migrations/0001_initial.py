@@ -16,13 +16,13 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='KeysMemory',
             fields=[
-                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('id', models.AutoField(primary_key=True, auto_created=True, serialize=False, verbose_name='ID')),
                 ('public_0', models.CharField(max_length=1000)),
                 ('public_1', models.CharField(max_length=1000)),
                 ('private_0', models.CharField(max_length=1000)),
                 ('private_1', models.CharField(max_length=1000)),
                 ('date', models.DateField(default=datetime.date.today)),
-                ('user', models.ForeignKey(null=True, to=settings.AUTH_USER_MODEL, default=None, blank=True)),
+                ('user', models.ForeignKey(null=True, default=None, blank=True, to=settings.AUTH_USER_MODEL, related_name='key')),
             ],
         ),
     ]

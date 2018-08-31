@@ -23,7 +23,15 @@ def add_friend(request):
             new_frien = User.objects.filter(username = login_val).first()
             
             if new_frien != None and new_frien.id != user.id:
-                data_json = {'error' : False, 'message' : "Veuillez attendre la réponse de votre contacte"}
+                try:
+                    
+                    print(user.info)
+                    user.info.friends_asked.add(new_frien.info)
+                    user.info.save()
+                    data_json = {'error' : False, 'message' : "Veuillez attendre la réponse de votre contacte"}
+                except:
+                    data_json = {'error' : True, 'message' : "Internal error"}
+                
             else:
                 data_json = {'error' : True, 'message' : "Contacte non trouvé"}
         except:
@@ -55,7 +63,7 @@ def register(request):
                 user = authenticate(username=username, password=raw_password)
                 user_info = UserInfo()
                 user_info.user = user
-                user.save()
+                user_info.save()
                 login(request, user)
             return redirect('/')
     else:
