@@ -14,10 +14,13 @@ Including another URLconf
 """
 from django.conf.urls import url
 
-from UserManagement.views import register, root
+from CryptoMess.views import send_key
+from UserManagement.views import register, root, check_connection
 
 
 urlpatterns = [
+    url(r'^check_user/', check_connection),
     url(r'^register/', register),
+    url(r'^get_key/', send_key),
     url(r'^', root),
 ]
