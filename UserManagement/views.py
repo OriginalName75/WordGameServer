@@ -1,16 +1,37 @@
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.models import User
 from django.http.response import JsonResponse
 from django.shortcuts import render, redirect
 from django.views.decorators.csrf import csrf_exempt
 import json
 import urllib
 
-from CryptoMess.lib.generateKeys import Encrypter
-from CryptoMess.models import KeysMemory
+from UserManagement.lib.Encrypt import check_user
+from UserManagement.models import UserInfo
 from WordGameServer import settings
 
 
+@csrf_exempt
+def add_friend(request):
+    user = check_user(request)
+    if user != None:
+        
+        try:
+            login_val = request.POST['friend']
+            
+            new_frien = User.objects.filter(username = login_val).first()
+            
+            if new_frien != None and new_frien.id != user.id:
+                data_json = {'error' : False, 'message' : "Veuillez attendre la réponse de votre contacte"}
+            else:
+                data_json = {'error' : True, 'message' : "Contacte non trouvé"}
+        except:
+            data_json = {'error' : True, 'message' : "Connection error"}
+        
+    else:
+        data_json = {'error' : True, 'message' : "Login error"}
+    return JsonResponse(data_json, safe = False)
 # Create your views here.
 def register(request):
     
@@ -32,6 +53,9 @@ def register(request):
                 username = form.cleaned_data.get('username')
                 raw_password = form.cleaned_data.get('password1')
                 user = authenticate(username=username, password=raw_password)
+                user_info = UserInfo()
+                user_info.user = user
+                user.save()
                 login(request, user)
             return redirect('/')
     else:
@@ -43,39 +67,10 @@ def root(request):
     return render(request, 'root.html', {})
 @csrf_exempt
 def check_connection(request):
-
-    try:
-   
-        login_val = request.POST['login']
-        password_val = request.POST['password']
-        public_key = request.POST['public_key']
-      
-        secret_message_hider = Encrypter()
-        key_database = KeysMemory.objects.filter(public_1 = public_key).first()
-
-        if key_database != None:
-            secret_message_hider.pub_key = (int(key_database.public_0), int(public_key))
-            secret_message_hider.prv_key = (int(key_database.private_0), int(key_database.private_1))
-            l = []
-            for elem in password_val.split(";"):
-                if elem != "":
-                    l.append(int(elem))
-  
-            password_val_dec = secret_message_hider.decrypt(l)
-            
-            logout(request)             
-            user = authenticate(username=login_val, password=password_val_dec)
-            if key_database.user != None:
-                key_database.user.delete()
-            key_database.user = user
-            key_database.save()
-            
-        if user != None:
-            data_json = {'answer' : True, 'error' : ""}
-            return JsonResponse(data_json, safe = False)
-            
-    except:
-        pass
-
-    data_json = {'answer' : False, 'error' : "Mdp/login invalide"}
+    user = check_user(request)
+    if user != None:
+        data_json = {'answer' : True, 'error' : ""}
+    else:
+        data_json = {'answer' : False, 'error' : "Mdp/login invalide"}
     return JsonResponse(data_json, safe = False)
+    

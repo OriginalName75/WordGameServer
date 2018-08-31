@@ -9,5 +9,5 @@ class KeysMemory(models.Model):
     private_0 = models.CharField(max_length=1000)
     private_1 = models.CharField(max_length=1000)
     date = models.DateField(default=datetime.date.today)
-    user = models.ForeignKey(User, blank=True, null=True, default = None)
+    user = models.ForeignKey(User, blank=True, null=True, default = None, related_name = "key")
     
