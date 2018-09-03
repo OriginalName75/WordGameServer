@@ -39,6 +39,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'UserManagement',
     'CryptoMess',
+    'GameManager',
 )
 
 MIDDLEWARE_CLASSES = (

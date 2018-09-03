@@ -1,12 +1,14 @@
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
+from django.db.models.query_utils import Q
 from django.http.response import JsonResponse
 from django.shortcuts import render, redirect
 from django.views.decorators.csrf import csrf_exempt
 import json
 import urllib
 
+from GameManager.models import Game
 from UserManagement.lib.Encrypt import check_user
 from UserManagement.models import UserInfo
 from WordGameServer import settings
@@ -24,9 +26,15 @@ def new_friend_answer(request):
             demander = user.info.friend_demands.filter(id = id_info).first()
             if demander != None:
                 if answ:
-                    user.info.friends.add(id_info)
+                    game = Game()
+                    game.save()
+                    user.info.games.add(game)
+                    demander.games.add(game)
+                    
                     
                 user.info.friend_demands.remove(demander)
+                if answ:
+                    demander.save()
                 user.info.save()
                 print("Done")
                 
@@ -42,7 +50,6 @@ def new_friend_answer(request):
 def get_new_friend_list(request):
     user = check_user(request)
     if user != None:
-        
         list_new_friend = []
         
         for friend_request in user.info.friend_demands.all():
@@ -50,11 +57,14 @@ def get_new_friend_list(request):
                                     "name" : friend_request.user.username,
                                     })
         list_friend = []
-        for friend in user.info.friends.all():
-            list_friend.append({"id": friend.id,
-                                    "name" : friend.user.username,
-                                    "mmr" : friend.mmr,
-                                    })   
+        for game_found in user.info.games.all():
+            for user_aux in game_found.users.all():
+                if user_aux.id != user.info.id:
+                    list_friend.append({"id": game_found.id,
+                                            "name" : user_aux.user.username,
+                                            "mmr" : user_aux.mmr,
+                                            "game_started" : game_found.isStarted,
+                                            })   
         
         data_json = {'error' : False, \
                      'new_friend_list' : list_new_friend, 'list_friend' : list_friend}
@@ -77,8 +87,16 @@ def add_friend(request):
             
             if new_frien != None and new_frien.id != user.id:
                 try:
-                    check_is_friend =  user.info.friends.filter(id = new_frien.info.id).first()
-                    if check_is_friend == None:
+                  
+                    games =  user.info.games.all()
+                    check_is_friend = True
+                    for g in games:
+                        
+                        if g.users.filter(id = new_frien.info.id).first() != None :
+                            check_is_friend = False
+                            break
+                    
+                    if check_is_friend:
                         user.info.friends_asked.add(new_frien.info)
                         user.info.save()
                         data_json = {'error' : False, 'message' : "Veuillez attendre la réponse de votre contacte"}
