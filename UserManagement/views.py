@@ -1,4 +1,4 @@
-from django.contrib.auth import login, authenticate, logout
+from django.contrib.auth import login, authenticate
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django.http.response import JsonResponse
@@ -13,6 +13,59 @@ from WordGameServer import settings
 
 
 @csrf_exempt
+def new_friend_answer(request):
+    user = check_user(request)
+    data_json = {}
+    if user != None:
+        try:
+            answer = request.POST['answer']
+            id_info = int(request.POST['id'])
+            answ = answer == "true"
+            demander = user.info.friend_demands.filter(id = id_info).first()
+            if demander != None:
+                if answ:
+                    user.info.friends.add(id_info)
+                    
+                user.info.friend_demands.remove(demander)
+                user.info.save()
+                print("Done")
+                
+            
+        except:
+            pass
+        
+        
+    
+    return JsonResponse(data_json, safe = False)
+
+@csrf_exempt
+def get_new_friend_list(request):
+    user = check_user(request)
+    if user != None:
+        
+        list_new_friend = []
+        
+        for friend_request in user.info.friend_demands.all():
+            list_new_friend.append({"id": friend_request.id,
+                                    "name" : friend_request.user.username,
+                                    })
+        list_friend = []
+        for friend in user.info.friends.all():
+            list_friend.append({"id": friend.id,
+                                    "name" : friend.user.username,
+                                    "mmr" : friend.mmr,
+                                    })   
+        
+        data_json = {'error' : False, \
+                     'new_friend_list' : list_new_friend, 'list_friend' : list_friend}
+        
+    else:
+        data_json = {'error' : True, 'new_friend_list' : [], 'list_friend' : []}
+    print(data_json)
+    return JsonResponse(data_json, safe = False)
+        
+
+@csrf_exempt
 def add_friend(request):
     user = check_user(request)
     if user != None:
@@ -24,11 +77,14 @@ def add_friend(request):
             
             if new_frien != None and new_frien.id != user.id:
                 try:
-                    
-                    print(user.info)
-                    user.info.friends_asked.add(new_frien.info)
-                    user.info.save()
-                    data_json = {'error' : False, 'message' : "Veuillez attendre la réponse de votre contacte"}
+                    check_is_friend =  user.info.friends.filter(id = new_frien.info.id).first()
+                    if check_is_friend == None:
+                        user.info.friends_asked.add(new_frien.info)
+                        user.info.save()
+                        data_json = {'error' : False, 'message' : "Veuillez attendre la réponse de votre contacte"}
+                    else:
+                        data_json = {'error' : True, 'message' : "C'est déjà votre amis"}
+                        
                 except:
                     data_json = {'error' : True, 'message' : "Internal error"}
                 

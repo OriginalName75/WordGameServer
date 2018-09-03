@@ -15,14 +15,16 @@ Including another URLconf
 from django.conf.urls import url
 
 from CryptoMess.views import send_key
-from UserManagement.views import register, root, check_connection, add_friend
+from UserManagement.views import register, root, check_connection, add_friend, \
+    get_new_friend_list, new_friend_answer
 
 
 urlpatterns = [
     url(r'^check_user/', check_connection),
     url(r'^register/', register),
     url(r'^get_key/', send_key),
+    url(r'^get_new_friend_list/', get_new_friend_list),
     url(r'^add_friend/', add_friend),
-    
+    url(r'^new_friend_answer/', new_friend_answer),
     url(r'^', root),
 ]
