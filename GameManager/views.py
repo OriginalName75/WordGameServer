@@ -46,7 +46,7 @@ def send_letter_grid(request):
                             game.userturn = user_info_obj
                     else:
                         game.userplayed = user_info_obj
-                    print("grid upd")
+               
                     game.save()
                     data_json = send_game_info(game, user_info_obj)
                 else:
@@ -127,12 +127,20 @@ def send_game_info(game, user_info_obj):
             (letter != "" and game.userplayed != None and \
              game.userplayed.id == user_info_obj.id) or \
             (not yourturn and letter == ""))
-            
+            play_against = None
+            for other_user in game.users.all():
+                if other_user.id != user_info_obj.id:
+                    play_against = other_user
+            if play_against == None:
+                play_against = "error"
+            else:
+                play_against = play_against.user.username
             data_json = {'error' : False,\
              'yourturn' : yourturn, 
              'grid' : grid,
              'letter' : letter,
              'waiting_for_other' : waiting_for_other,
+             'play_against' : play_against
              }
             
         except:

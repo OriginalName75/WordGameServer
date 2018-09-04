@@ -50,20 +50,32 @@ def new_friend_answer(request):
 def get_new_friend_list(request):
     user = check_user(request)
     if user != None:
+        user_info_obj = user.info
         list_new_friend = []
         
-        for friend_request in user.info.friend_demands.all():
+        for friend_request in user_info_obj.friend_demands.all():
             list_new_friend.append({"id": friend_request.id,
                                     "name" : friend_request.user.username,
                                     })
         list_friend = []
-        for game_found in user.info.games.all():
+        for game_found in user_info_obj.games.all():
             for user_aux in game_found.users.all():
-                if user_aux.id != user.info.id:
+                if user_aux.id != user_info_obj.id:
+                    letter_choose = game_found.letter_choosed != None
+                    if letter_choose != None and game_found.letter_choosed != "":
+                        letter = game_found.letter_choosed
+                    else:
+                        letter = ""
+                    yourturn = game_found.userturn.id == user_info_obj.id
+                    waiting_for_other = (\
+                    (letter != "" and game_found.userplayed != None and \
+                     game_found.userplayed.id == user_info_obj.id) or \
+                    (not yourturn and letter == ""))
                     list_friend.append({"id": game_found.id,
                                             "name" : user_aux.user.username,
                                             "mmr" : user_aux.mmr,
                                             "game_started" : game_found.isStarted,
+                                            "can_play" : not waiting_for_other,
                                             })   
         
         data_json = {'error' : False, \
