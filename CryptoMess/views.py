@@ -1,7 +1,7 @@
 from django.http.response import JsonResponse
 
 from CryptoMess.lib.Checker import check_old
-from CryptoMess.lib.generateKeys import generate_keys, Encrypter
+from CryptoMess.lib.generateKeys import Encrypter
 from CryptoMess.models import KeysMemory
 
 

@@ -71,7 +71,6 @@ def get_new_friend_list(request):
         
     else:
         data_json = {'error' : True, 'new_friend_list' : [], 'list_friend' : []}
-    print(data_json)
     return JsonResponse(data_json, safe = False)
         
 
