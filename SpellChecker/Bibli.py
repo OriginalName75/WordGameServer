@@ -6,4 +6,7 @@ class Bibli():
         f.close()
         self.list_words = contents.split("\n")
     def check(self, word):
+        if word in self.list_words:
+            print(word)
+        
         return word in self.list_words

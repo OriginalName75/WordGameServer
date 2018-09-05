@@ -1,6 +1,6 @@
 from django.test import TestCase
 
-from SpellChecker.Checker import matrix_checker
+from SpellChecker.Checker import _matrix_checker
 from WordGameServer.settings import POINTS_2, POINTS_5, POINTS_4
 
 
@@ -14,7 +14,7 @@ class TheTest(TestCase):
                 ["_","_","_","_","_" ],\
                 ["_","_","_","_","_" ]]
         
-        rep = matrix_checker(matr)
+        rep = _matrix_checker(matr)
         self.assertEqual(rep["points"], 0)
         self.assertEqual(rep["dots"], [])
         
@@ -23,7 +23,7 @@ class TheTest(TestCase):
                 ["_","_","_","_","_" ],\
                 ["_","_","_","_","_" ],\
                 ["_","_","_","_","_" ]]
-        rep = matrix_checker(matr)
+        rep = _matrix_checker(matr)
         self.assertEqual(rep["points"], POINTS_2)
         self.assertEqual(rep["dots"], [[[0,0], [0,1]]])
         
@@ -32,7 +32,7 @@ class TheTest(TestCase):
                 ["_","_","_","_","_" ],\
                 ["_","_","_","_","_" ],\
                 ["_","_","_","_","_" ]]
-        rep = matrix_checker(matr)
+        rep = _matrix_checker(matr)
         self.assertEqual(rep["points"], POINTS_2)
         self.assertEqual(rep["dots"], [[[0,0], [1,0]]])
         
@@ -42,7 +42,7 @@ class TheTest(TestCase):
                 ["_","_","_","_","_" ],\
                 ["_","_","_","_","_" ],\
                 ["_","_","_","_","_" ]]
-        rep = matrix_checker(matr)
+        rep = _matrix_checker(matr)
         self.assertEqual(rep["points"], 2*POINTS_2)
         
         matr = [["j","_","_","_","_" ],\
@@ -50,13 +50,13 @@ class TheTest(TestCase):
                 ["p","o","c","h","e" ],\
                 ["_","_","_","_","_" ],\
                 ["_","_","_","_","_" ]]
-        rep = matrix_checker(matr)
+        rep = _matrix_checker(matr)
         self.assertEqual(rep["points"], POINTS_2 + POINTS_5)
         matr = [["j","_","_","_","_" ],\
                 ["e","_","_","_","_" ],\
                 ["p","o","r","c","e" ],\
                 ["_","_","_","_","_" ],\
                 ["_","_","_","_","_" ]]
-        rep = matrix_checker(matr)
+        rep = _matrix_checker(matr)
         self.assertEqual(rep["points"], POINTS_2 + POINTS_4)
         

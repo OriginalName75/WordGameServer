@@ -4,6 +4,7 @@ from django.views.decorators.csrf import csrf_exempt
 import random
 
 from GameManager.models import Game, Cell
+from SpellChecker.Checker import matrix_checker
 from UserManagement.lib.Encrypt import check_user
 
 
@@ -86,7 +87,8 @@ def send_letter(request):
     return JsonResponse(data_json, safe = False)
 def send_game_info(game, user_info_obj):
     grid = []
-    for cell in game.cells.filter(user__id = user_info_obj.id):
+    my_cells = game.cells.filter(user__id = user_info_obj.id)
+    for cell in my_cells:
         json = {"row" : cell.row,
                 "col" : cell.col,
                 "letter" : cell.letter}
@@ -128,6 +130,13 @@ def send_game_info(game, user_info_obj):
                 letter = ""
                 
             game_finished = game.number_of_letters >= 25
+            if game_finished:
+                other_cells = game.cells.filter(~Q(user__id = user_info_obj.id))
+                game_fi = {"my" : matrix_checker(my_cells), 
+                           "other" :matrix_checker(other_cells)}
+            else:
+                game_fi = {}
+                
             yourturn = game.userturn.id == user_info_obj.id
             waiting_for_other = (\
             (letter != "" and game.userplayed != None and \
@@ -148,8 +157,10 @@ def send_game_info(game, user_info_obj):
              'letter' : letter,
              'waiting_for_other' : waiting_for_other,
              'play_against' : play_against,
-             'game_finished' : game_finished
+             'game_finished' : game_finished,
+             'game_fi' : game_fi
              }
+            
             
         except:
             data_json = {'error' : True}

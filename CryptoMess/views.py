@@ -43,7 +43,7 @@ def generate_full(request):
                     cell.row = i
                     cell.col = j
                     cell.user = user.info
-                    cell.letter = random.choice("abcdefghijklmnopqrstuvwxyz")
+                    cell.letter = random.choice("sel")
                     cell.save()
                     game.number_of_letters += 2
                     cell = Cell()
@@ -51,7 +51,7 @@ def generate_full(request):
                     cell.row = i
                     cell.col = j
                     cell.user = other_f
-                    cell.letter = random.choice("abcdefghijklmnopqrstuvwxyz")
+                    cell.letter = random.choice("sel")
                     cell.save()
             data_json = {'ok' : 'ok'}
             game.save()
