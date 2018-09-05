@@ -96,7 +96,7 @@ def send_game_info(game, user_info_obj):
         rand = random.randint(0,1)
         
         if rand == 1:
-            
+            print("yay")
             game.userturn  = user_info_obj
         else:
             oth_user = None
@@ -108,26 +108,32 @@ def send_game_info(game, user_info_obj):
                 game.userturn  = oth_user
             else:
                 error
+               
         if not error:
             game.letter_choosed = ""
-            game.cells.delete()
+            for c in game.cells.all():
+                c.delete()
+            
             game.save()
   
     if error:
         data_json = {'error' : True}
     else:
         try:
-            letter_choose = game.letter_choosed != None
-            if letter_choose != None and game.letter_choosed != "":
+
+            if game.letter_choosed != None and game.letter_choosed != "":
                 letter = game.letter_choosed
             else:
                 letter = ""
+                
+            
             yourturn = game.userturn.id == user_info_obj.id
             waiting_for_other = (\
             (letter != "" and game.userplayed != None and \
              game.userplayed.id == user_info_obj.id) or \
             (not yourturn and letter == ""))
             play_against = None
+            
             for other_user in game.users.all():
                 if other_user.id != user_info_obj.id:
                     play_against = other_user
