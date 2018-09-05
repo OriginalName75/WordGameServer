@@ -18,7 +18,7 @@ def send_letter_grid(request):
             i = int(request.POST['i'])
             j = int(request.POST['j'])
             game = Game.objects.filter(id = id_game).first()
-            if game != None:
+            if game != None and game.number_of_letters < 25:
                 
                 already_ex = game.cells.filter(Q(user__id = user_info_obj.id)  & \
                                   Q(row = i) & Q(col = j)).first()
@@ -30,6 +30,7 @@ def send_letter_grid(request):
                     cell.user = user_info_obj
                     cell.letter = letter
                     cell.save()
+                    game.number_of_letters += 1
                     if game.userplayed != None:
                         game.userplayed = None
                         game.letter_choosed = ""
@@ -40,6 +41,7 @@ def send_letter_grid(request):
                             for other in others:
                                 if other.id != user_info_obj.id:
                                     other_f = other
+                                    break
                             if other_f != None:
                                 game.userturn = other_f
                         else:
@@ -94,9 +96,8 @@ def send_game_info(game, user_info_obj):
     if game.userturn is None or not game.isStarted:
         game.isStarted = True;
         rand = random.randint(0,1)
-        
+        game.number_of_letters = 0
         if rand == 1:
-            print("yay")
             game.userturn  = user_info_obj
         else:
             oth_user = None
@@ -126,7 +127,7 @@ def send_game_info(game, user_info_obj):
             else:
                 letter = ""
                 
-            
+            game_finished = game.number_of_letters >= 25
             yourturn = game.userturn.id == user_info_obj.id
             waiting_for_other = (\
             (letter != "" and game.userplayed != None and \
@@ -146,7 +147,8 @@ def send_game_info(game, user_info_obj):
              'grid' : grid,
              'letter' : letter,
              'waiting_for_other' : waiting_for_other,
-             'play_against' : play_against
+             'play_against' : play_against,
+             'game_finished' : game_finished
              }
             
         except:
@@ -169,5 +171,5 @@ def read_game(request):
             data_json = {'error' : True}
     else:
         data_json = {'error' : True}
-    print(data_json)
     return JsonResponse(data_json, safe = False)
+

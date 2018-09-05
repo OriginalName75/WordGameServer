@@ -13,8 +13,18 @@ https://docs.djangoproject.com/en/1.8/ref/settings/
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
 
+from SpellChecker.Bibli import Bibli
+
+
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+
+BIBLI = Bibli(BASE_DIR)
+
+POINTS_5 = 10
+POINTS_4 = 5
+POINTS_3 = 2
+POINTS_2 = 1
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.8/howto/deployment/checklist/

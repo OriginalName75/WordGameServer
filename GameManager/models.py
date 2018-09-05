@@ -11,6 +11,7 @@ class Game(models.Model):
     letter_choosed = models.CharField(max_length = 1, blank=True, null=True, default = None)
     userplayed = models.ForeignKey("UserManagement.UserInfo", blank=True, null=True, default = None, \
                                  related_name = "your_turn_to_choose")
+    number_of_letters = models.IntegerField(default = 0)
 class Cell(models.Model):
     game = models.ForeignKey(Game, related_name = "cells")
     row = models.IntegerField()
