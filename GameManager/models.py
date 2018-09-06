@@ -12,6 +12,7 @@ class Game(models.Model):
     userplayed = models.ForeignKey("UserManagement.UserInfo", blank=True, null=True, default = None, \
                                  related_name = "your_turn_to_choose")
     number_of_letters = models.IntegerField(default = 0)
+    number_of_quit = models.IntegerField(default = 0)
 class Cell(models.Model):
     game = models.ForeignKey(Game, related_name = "cells")
     row = models.IntegerField()

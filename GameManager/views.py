@@ -6,8 +6,36 @@ import random
 from GameManager.models import Game, Cell
 from SpellChecker.Checker import matrix_checker
 from UserManagement.lib.Encrypt import check_user
-
-
+@csrf_exempt
+def quit_game(request):
+    user = check_user(request)
+    if user != None:
+        try:
+            id_game = int(request.POST['id_game'])
+            game = Game.objects.filter(id = id_game).first()
+            if game != None and game.number_of_letters >=25:
+             
+                if game.number_of_quit == 0:
+                    game.number_of_quit = 1
+                    game.save()
+                    
+                else:
+                    
+                    
+                    game.isStarted = False
+                    game.save()
+              
+            else:
+                
+                data_json = {'error' : True}
+        except:
+           
+            data_json = {'error' : True}
+    else:
+       
+        data_json = {'error' : True}
+    print(data_json)
+    return JsonResponse(data_json, safe = False)
 @csrf_exempt
 def send_letter_grid(request):
     user = check_user(request)
@@ -102,6 +130,7 @@ def send_game_info(game, user_info_obj):
         game.isStarted = True;
         rand = random.randint(0,1)
         game.number_of_letters = 0
+        game.number_of_quit = 0
         if rand == 1:
             game.userturn  = user_info_obj
         else:

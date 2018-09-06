@@ -15,7 +15,8 @@ Including another URLconf
 from django.conf.urls import url
 
 from CryptoMess.views import send_key, test, generate_full
-from GameManager.views import read_game, send_letter, send_letter_grid
+from GameManager.views import read_game, send_letter, send_letter_grid, \
+    quit_game
 from UserManagement.views import register, root, check_connection, add_friend, \
     get_new_friend_list, new_friend_answer
 
@@ -32,5 +33,6 @@ urlpatterns = [
     url(r'^send_letter_grid/', send_letter_grid),
     url(r'^test/', test),
     url(r'^generate_full/', generate_full),
+    url(r'^quit/', quit_game),
     url(r'^', root),
 ]
