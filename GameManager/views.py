@@ -85,14 +85,17 @@ def send_letter(request):
     else:
         data_json = {'error' : True}
     return JsonResponse(data_json, safe = False)
-def send_game_info(game, user_info_obj):
+def get_grid(my_cells):
     grid = []
-    my_cells = game.cells.filter(user__id = user_info_obj.id)
     for cell in my_cells:
         json = {"row" : cell.row,
                 "col" : cell.col,
                 "letter" : cell.letter}
         grid.append(json)
+    return grid
+def send_game_info(game, user_info_obj):
+    my_cells = game.cells.filter(user__id = user_info_obj.id)
+    grid = get_grid(my_cells)
     
     error = False
     if game.userturn is None or not game.isStarted:
@@ -134,8 +137,10 @@ def send_game_info(game, user_info_obj):
                 other_cells = game.cells.filter(~Q(user__id = user_info_obj.id))
                 game_fi = {"my" : matrix_checker(my_cells), 
                            "other" :matrix_checker(other_cells)}
+                other_grid = get_grid(other_cells)
             else:
                 game_fi = {}
+                other_grid = []
                 
             yourturn = game.userturn.id == user_info_obj.id
             waiting_for_other = (\
@@ -158,7 +163,8 @@ def send_game_info(game, user_info_obj):
              'waiting_for_other' : waiting_for_other,
              'play_against' : play_against,
              'game_finished' : game_finished,
-             'game_fi' : game_fi
+             'game_fi' : game_fi,
+             'othergrid' : other_grid,
              }
             
             
