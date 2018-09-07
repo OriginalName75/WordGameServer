@@ -6,6 +6,28 @@ import random
 from GameManager.models import Game, Cell
 from SpellChecker.Checker import matrix_checker
 from UserManagement.lib.Encrypt import check_user
+def calc_elo(winner, looser, isdraw):
+    d = winner.mmr - looser.mmr
+    
+    p = 1/(1+10**(-1*d/400));
+    if p < 0:
+        p *= -1
+
+    
+    if isdraw:
+        
+        w_p = 0.5
+        l_p = 0.5
+    else:
+        w_p = 1
+        l_p = 0
+        
+    winner.mmr += 20 *(w_p - p)
+    looser.mmr += 20 *(l_p - (1 - p))
+    
+    winner.save()
+    looser.save()
+    
 @csrf_exempt
 def quit_game(request):
     user = check_user(request)
@@ -13,7 +35,7 @@ def quit_game(request):
         try:
             id_game = int(request.POST['id_game'])
             game = Game.objects.filter(id = id_game).first()
-            if game != None and game.number_of_letters >=25:
+            if game != None and game.number_of_letters >=50:
              
                 if game.number_of_quit == 0:
                     game.number_of_quit = 1
@@ -48,7 +70,7 @@ def send_letter_grid(request):
             i = int(request.POST['i'])
             j = int(request.POST['j'])
             game = Game.objects.filter(id = id_game).first()
-            if game != None and game.number_of_letters < 25:
+            if game != None and game.number_of_letters < 50:
                 
                 already_ex = game.cells.filter(Q(user__id = user_info_obj.id)  & \
                                   Q(row = i) & Q(col = j)).first()
@@ -58,7 +80,7 @@ def send_letter_grid(request):
                     cell.row = i
                     cell.col = j
                     cell.user = user_info_obj
-                    cell.letter = letter
+                    cell.letter = letter.upper()
                     cell.save()
                     game.number_of_letters += 1
                     if game.userplayed != None:
@@ -98,17 +120,20 @@ def send_letter(request):
         user_info_obj = user.info
         try:
             letter = request.POST['letter']
-            id_game = int(request.POST['id_game'])
-            game = Game.objects.filter(id = id_game).first()
-            if game != None:
-                if game.letter_choosed == "" or game.letter_choosed == None:
-                    game.letter_choosed = letter
-                    game.save()
-                    data_json = send_game_info(game, user_info_obj)
+            if len(letter) == 1 and letter.lower() in "abcdefghijklmnopqrstuvwxyz":
+                id_game = int(request.POST['id_game'])
+                game = Game.objects.filter(id = id_game).first()
+                if game != None:
+                    if game.letter_choosed == "" or game.letter_choosed == None:
+                        game.letter_choosed = letter
+                        game.save()
+                        data_json = send_game_info(game, user_info_obj)
+                    else:
+                        data_json = {'error' : True}
                 else:
                     data_json = {'error' : True}
             else:
-                data_json = {'error' : True}
+                    data_json = {'error' : True}
         except:
             data_json = {'error' : True}
     else:
@@ -123,15 +148,14 @@ def get_grid(my_cells):
         grid.append(json)
     return grid
 def send_game_info(game, user_info_obj):
-    my_cells = game.cells.filter(user__id = user_info_obj.id)
-    grid = get_grid(my_cells)
-    
+   
     error = False
     if game.userturn is None or not game.isStarted:
         game.isStarted = True;
         rand = random.randint(0,1)
         game.number_of_letters = 0
         game.number_of_quit = 0
+        game.mmr_calculated = False
         game.userleft = None
         if rand == 1:
             game.userturn  = user_info_obj
@@ -152,7 +176,8 @@ def send_game_info(game, user_info_obj):
                 c.delete()
             
             game.save()
-  
+    my_cells = game.cells.filter(user__id = user_info_obj.id)
+    grid = get_grid(my_cells)
     if error:
         data_json = {'error' : True}
     else:
@@ -163,12 +188,32 @@ def send_game_info(game, user_info_obj):
             else:
                 letter = ""
                 
-            game_finished = game.number_of_letters >= 25
+            game_finished = game.number_of_letters >= 50
             if game_finished:
+                
+                
                 other_cells = game.cells.filter(~Q(user__id = user_info_obj.id))
-                game_fi = {"my" : matrix_checker(my_cells), 
-                           "other" :matrix_checker(other_cells)}
+                my_val = matrix_checker(my_cells)
+                other_val = matrix_checker(other_cells)
+                game_fi = {"my" : my_val, 
+                           "other" :other_val}
                 other_grid = get_grid(other_cells)
+                if not game.mmr_calculated:
+                    oth_user = None
+                    for other_user in game.users.all():
+                        if other_user.id != user_info_obj.id:
+                            oth_user = other_user
+                    if oth_user != None:
+                        
+                        if my_val["points"] == other_val["points"]:
+                            calc_elo(user_info_obj, oth_user, True)
+                        else:
+                            if my_val["points"] > other_val["points"]:
+                                calc_elo(user_info_obj, oth_user, False)
+                            else:
+                                calc_elo(oth_user, user_info_obj, False)
+                        game.mmr_calculated = True
+                        game.save()
             else:
                 game_fi = {}
                 other_grid = []

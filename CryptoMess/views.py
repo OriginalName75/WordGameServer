@@ -58,8 +58,8 @@ def generate_full(request):
     if data_json == None:
         data_json = {'nothing' : 'ok'}
         
-    """game.isStarted = False
-    game.save()"""
+    game.isStarted = False
+    game.save()
     return JsonResponse(data_json, safe = False)
 def test(request):
     data_json = None
@@ -116,7 +116,7 @@ def test(request):
                             break
                     if break_:
                         break
-        if game.letter_choosed != None and game.letter_choosed != "":
+        else:
    
         
             if yourturn:
@@ -125,6 +125,6 @@ def test(request):
                 game.save()
     if data_json == None:
         data_json = {'nothing' : 'ok'}
-    """game.isStarted = False
-    game.save()"""
+    game.isStarted = False
+    game.save()
     return JsonResponse(data_json, safe = False)

@@ -1,6 +1,8 @@
 from django.test import TestCase
 
+from GameManager.views import calc_elo
 from SpellChecker.Checker import _matrix_checker
+from UserManagement.models import UserInfo
 from WordGameServer.settings import POINTS_2, POINTS_5, POINTS_4
 
 
@@ -8,6 +10,23 @@ from WordGameServer.settings import POINTS_2, POINTS_5, POINTS_4
 class TheTest(TestCase):
    
     def test_all(self):
+        
+        w= UserInfo() 
+        w.mmr = 1800
+        l= UserInfo() 
+        l.mmr =  2005
+        calc_elo(w, l, True)
+ 
+        
+        w= UserInfo() 
+        w.mmr = 1800
+        l= UserInfo() 
+        l.mmr =  2005
+        calc_elo(w, l, False)
+       
+        
+        
+        
         matr = [["_","_","_","_","_" ],\
                 ["_","_","_","_","_" ],\
                 ["_","_","_","_","_" ],\

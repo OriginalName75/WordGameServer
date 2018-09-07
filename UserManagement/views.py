@@ -71,7 +71,7 @@ def get_new_friend_list(request):
                     (letter != "" and game_found.userplayed != None and \
                      game_found.userplayed.id == user_info_obj.id) or \
                     (not yourturn and letter == ""))
-                    gamefinished = game_found.number_of_letters >= 25
+                    gamefinished = game_found.number_of_letters >= 50
                     list_friend.append({"id": game_found.id,
                                             "name" : user_aux.user.username,
                                             "mmr" : user_aux.mmr,
@@ -83,7 +83,8 @@ def get_new_friend_list(request):
                                             })   
         
         data_json = {'error' : False, \
-                     'new_friend_list' : list_new_friend, 'list_friend' : list_friend}
+                     'new_friend_list' : list_new_friend, \
+                     'list_friend' : list_friend, "elo" : user_info_obj.mmr}
         
     else:
         data_json = {'error' : True, 'new_friend_list' : [], 'list_friend' : []}

@@ -7,7 +7,7 @@ def matrix_checker(cells):
         for j in range(5):
             matr[i][j] = "_"
     for c in cells:
-        matr[c.row][c.col] = c.letter 
+        matr[c.row][c.col] = c.letter.lower()
     
     return _matrix_checker(matr)
     

@@ -15,6 +15,7 @@ class Game(models.Model):
     number_of_quit = models.IntegerField(default = 0)
     userleft = models.ForeignKey("UserManagement.UserInfo", blank=True, null=True, default = None, \
                                  related_name = "left_games")
+    mmr_calculated = models.BooleanField(default = False)
 class Cell(models.Model):
     game = models.ForeignKey(Game, related_name = "cells")
     row = models.IntegerField()
