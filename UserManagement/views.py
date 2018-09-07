@@ -84,7 +84,7 @@ def get_new_friend_list(request):
         
         data_json = {'error' : False, \
                      'new_friend_list' : list_new_friend, \
-                     'list_friend' : list_friend, "elo" : user_info_obj.mmr}
+                     'list_friend' : list_friend, "elo" : int(user_info_obj.mmr)}
         
     else:
         data_json = {'error' : True, 'new_friend_list' : [], 'list_friend' : []}

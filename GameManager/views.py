@@ -70,7 +70,7 @@ def send_letter_grid(request):
             i = int(request.POST['i'])
             j = int(request.POST['j'])
             game = Game.objects.filter(id = id_game).first()
-            if game != None and game.number_of_letters < 50:
+            if game != None and game.number_of_letters < 50 and i>= 0 and i < 5 and j >= 0 and j < 5:
                 
                 already_ex = game.cells.filter(Q(user__id = user_info_obj.id)  & \
                                   Q(row = i) & Q(col = j)).first()
