@@ -17,13 +17,14 @@ def quit_game(request):
              
                 if game.number_of_quit == 0:
                     game.number_of_quit = 1
+                    game.userleft = user.info
                     game.save()
                     
                 else:
+                    if game.userleft.id != user.info.id:
                     
-                    
-                    game.isStarted = False
-                    game.save()
+                        game.isStarted = False
+                        game.save()
               
             else:
                 
@@ -131,6 +132,7 @@ def send_game_info(game, user_info_obj):
         rand = random.randint(0,1)
         game.number_of_letters = 0
         game.number_of_quit = 0
+        game.userleft = None
         if rand == 1:
             game.userturn  = user_info_obj
         else:

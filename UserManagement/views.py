@@ -36,7 +36,7 @@ def new_friend_answer(request):
                 if answ:
                     demander.save()
                 user.info.save()
-                print("Done")
+             
                 
             
         except:
@@ -78,6 +78,8 @@ def get_new_friend_list(request):
                                             "game_started" : game_found.isStarted,
                                             "can_play" : not waiting_for_other,
                                             "game_finished" : gamefinished,
+                                            "wait_quit" : game_found.userleft != None\
+                                             and game_found.userleft.id == user_info_obj.id,
                                             })   
         
         data_json = {'error' : False, \
@@ -85,6 +87,7 @@ def get_new_friend_list(request):
         
     else:
         data_json = {'error' : True, 'new_friend_list' : [], 'list_friend' : []}
+    
     return JsonResponse(data_json, safe = False)
         
 

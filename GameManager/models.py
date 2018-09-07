@@ -13,6 +13,8 @@ class Game(models.Model):
                                  related_name = "your_turn_to_choose")
     number_of_letters = models.IntegerField(default = 0)
     number_of_quit = models.IntegerField(default = 0)
+    userleft = models.ForeignKey("UserManagement.UserInfo", blank=True, null=True, default = None, \
+                                 related_name = "left_games")
 class Cell(models.Model):
     game = models.ForeignKey(Game, related_name = "cells")
     row = models.IntegerField()

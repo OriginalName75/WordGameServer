@@ -116,9 +116,9 @@ def test(request):
                             break
                     if break_:
                         break
-        else:
-            letter = ""
-            
+        if game.letter_choosed != None and game.letter_choosed != "":
+   
+        
             if yourturn:
                 game.letter_choosed = "A"
                 data_json = {'letter_choosed' : 'ok'}
